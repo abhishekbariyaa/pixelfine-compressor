@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Download, Save, CheckCircle2 } from "lucide-react";
@@ -7,7 +6,7 @@ import {
   getFileExtension, 
   downloadFile 
 } from "@/utils/imageCompression";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 interface ExportOptionsProps {
   originalFile: File | null;
