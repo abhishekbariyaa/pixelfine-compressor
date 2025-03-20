@@ -1,70 +1,89 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 
 // Import components
 import CompressorHeader from "@/components/CompressorHeader";
 import UploadZone from "@/components/UploadZone";
-import ImagePreview from "@/components/ImagePreview";
 import QualityControl from "@/components/QualityControl";
 import ExportOptions from "@/components/ExportOptions";
+import MultiImagePreview from "@/components/MultiImagePreview";
+import PrivacyNotice from "@/components/PrivacyNotice";
 
 // Import utility functions
 import { compressImage } from "@/utils/imageCompression";
+import { ImageItem } from "@/components/MultiImagePreview";
+
+// 10 minutes in milliseconds
+const AUTO_DELETE_TIMEOUT = 10 * 60 * 1000;
 
 const Index = () => {
-  // State for the original file
-  const [originalFile, setOriginalFile] = useState<File | null>(null);
-  
-  // State for original and compressed image URLs
-  const [originalImage, setOriginalImage] = useState<string | null>(null);
-  const [compressedImage, setCompressedImage] = useState<string | null>(null);
-  
-  // State for compression data
-  const [compressedBlob, setCompressedBlob] = useState<Blob | null>(null);
-  const [originalSize, setOriginalSize] = useState<number>(0);
-  const [compressedSize, setCompressedSize] = useState<number>(0);
-  const [compressionRatio, setCompressionRatio] = useState<number>(0);
-  
-  // Quality control state (0.6 = 60% quality, good default)
-  const [quality, setQuality] = useState<number>(0.6);
+  // State for multiple images
+  const [images, setImages] = useState<ImageItem[]>([]);
   
   // Loading state
   const [isCompressing, setIsCompressing] = useState<boolean>(false);
+  
+  // Quality control state (0.6 = 60% quality, good default)
+  const [quality, setQuality] = useState<number>(0.6);
 
   // Handle file selection from UploadZone
-  const handleFileSelect = async (file: File) => {
+  const handleFilesSelect = async (files: File[]) => {
+    if (!files || files.length === 0) return;
+    
     try {
-      // Create URL for original image preview
-      const originalUrl = URL.createObjectURL(file);
-      setOriginalFile(file);
-      setOriginalImage(originalUrl);
-      setOriginalSize(file.size);
-      
-      // Start compression
       setIsCompressing(true);
       
-      // Compress the image with current quality settings
-      const result = await compressImage(file, {
-        quality,
-        format: 'image/jpeg',
-        maxWidth: 2000,  // Reasonable max dimensions to preserve quality
-        maxHeight: 2000, // while still reducing file size
-      });
+      const newImages: ImageItem[] = [];
       
-      // Update state with compression results
-      setCompressedImage(result.url);
-      setCompressedBlob(result.blob);
-      setCompressedSize(result.compressedSize);
-      setCompressionRatio(result.compressionRatio);
+      // Process each file
+      for (const file of files) {
+        // Create URL for original image preview
+        const originalUrl = URL.createObjectURL(file);
+        const imageId = uuidv4();
+        
+        // Compress the image with current quality settings
+        const result = await compressImage(file, {
+          quality,
+          format: 'image/jpeg',
+          maxWidth: 2000,
+          maxHeight: 2000,
+        });
+        
+        // Create image item
+        const imageItem: ImageItem = {
+          id: imageId,
+          originalFile: file,
+          originalUrl,
+          originalSize: file.size,
+          compressedUrl: result.url,
+          compressedBlob: result.blob,
+          compressedSize: result.compressedSize,
+          compressionRatio: result.compressionRatio,
+        };
+        
+        newImages.push(imageItem);
+        
+        // Schedule auto-deletion for this image
+        setTimeout(() => {
+          removeImage(imageId);
+          toast.info("Image removed", {
+            description: "Images are automatically deleted after 10 minutes for your privacy",
+          });
+        }, AUTO_DELETE_TIMEOUT);
+      }
+      
+      // Update state with new images
+      setImages(prev => [...prev, ...newImages]);
       
       // Show success toast
-      toast.success('Image compressed successfully', {
-        description: `Reduced by ${result.compressionRatio.toFixed(1)}%`,
+      toast.success(`${files.length > 1 ? 'Images' : 'Image'} uploaded and compressed`, {
+        description: `${files.length} ${files.length > 1 ? 'images' : 'image'} successfully processed`,
       });
     } catch (error) {
-      toast.error('Failed to process image', {
+      toast.error('Failed to process images', {
         description: error instanceof Error ? error.message : 'Unknown error occurred',
       });
     } finally {
@@ -74,25 +93,41 @@ const Index = () => {
 
   // Handle quality change from QualityControl
   const handleQualityChange = async (newQuality: number) => {
-    if (!originalFile) return;
+    if (images.length === 0) return;
     
     setQuality(newQuality);
     setIsCompressing(true);
     
     try {
-      // Recompress with new quality setting
-      const result = await compressImage(originalFile, {
-        quality: newQuality,
-        format: 'image/jpeg',
-        maxWidth: 2000,
-        maxHeight: 2000,
-      });
+      // Create a new array to store updated images
+      const updatedImages = await Promise.all(
+        images.map(async (image) => {
+          // Recompress with new quality setting
+          const result = await compressImage(image.originalFile, {
+            quality: newQuality,
+            format: 'image/jpeg',
+            maxWidth: 2000,
+            maxHeight: 2000,
+          });
+          
+          // Release previous blob URL to prevent memory leaks
+          if (image.compressedUrl) {
+            URL.revokeObjectURL(image.compressedUrl);
+          }
+          
+          // Return updated image
+          return {
+            ...image,
+            compressedUrl: result.url,
+            compressedBlob: result.blob,
+            compressedSize: result.compressedSize,
+            compressionRatio: result.compressionRatio,
+          };
+        })
+      );
       
-      // Update compression results
-      setCompressedImage(result.url);
-      setCompressedBlob(result.blob);
-      setCompressedSize(result.compressedSize);
-      setCompressionRatio(result.compressionRatio);
+      // Update state with recompressed images
+      setImages(updatedImages);
     } catch (error) {
       toast.error('Failed to update compression', {
         description: error instanceof Error ? error.message : 'Unknown error occurred',
@@ -103,32 +138,76 @@ const Index = () => {
   };
 
   // Handle export format change
-  const handleExport = (blob: Blob, url: string) => {
-    // Release previous blob URL to prevent memory leaks
-    if (compressedImage) {
-      URL.revokeObjectURL(compressedImage);
-    }
+  const handleExport = (id: string, blob: Blob, url: string) => {
+    setImages(prev => 
+      prev.map(img => {
+        if (img.id === id) {
+          // Release previous blob URL to prevent memory leaks
+          if (img.compressedUrl) {
+            URL.revokeObjectURL(img.compressedUrl);
+          }
+          
+          // Return updated image
+          return {
+            ...img,
+            compressedBlob: blob,
+            compressedUrl: url,
+            compressedSize: blob.size,
+            compressionRatio: (1 - blob.size / img.originalSize) * 100,
+          };
+        }
+        return img;
+      })
+    );
+  };
+
+  // Remove image by ID
+  const removeImage = useCallback((id: string) => {
+    setImages(prev => {
+      // Find the image to remove
+      const imageToRemove = prev.find(img => img.id === id);
+      
+      // Release object URLs to prevent memory leaks
+      if (imageToRemove) {
+        if (imageToRemove.originalUrl) URL.revokeObjectURL(imageToRemove.originalUrl);
+        if (imageToRemove.compressedUrl) URL.revokeObjectURL(imageToRemove.compressedUrl);
+      }
+      
+      // Filter out the removed image
+      return prev.filter(img => img.id !== id);
+    });
+  }, []);
+
+  // Reset all images
+  const handleReset = () => {
+    // Clean up object URLs
+    images.forEach(img => {
+      if (img.originalUrl) URL.revokeObjectURL(img.originalUrl);
+      if (img.compressedUrl) URL.revokeObjectURL(img.compressedUrl);
+    });
     
-    // Update state with new compressed image
-    setCompressedBlob(blob);
-    setCompressedImage(url);
-    setCompressedSize(blob.size);
-    setCompressionRatio((1 - blob.size / originalSize) * 100);
+    // Clear images array
+    setImages([]);
   };
 
   // Clean up object URLs on unmount
   useEffect(() => {
     return () => {
-      if (originalImage) URL.revokeObjectURL(originalImage);
-      if (compressedImage) URL.revokeObjectURL(compressedImage);
+      images.forEach(img => {
+        if (img.originalUrl) URL.revokeObjectURL(img.originalUrl);
+        if (img.compressedUrl) URL.revokeObjectURL(img.compressedUrl);
+      });
     };
-  }, [originalImage, compressedImage]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background pb-16">
       <div className="container max-w-5xl py-10">
         {/* App Header */}
         <CompressorHeader />
+        
+        {/* Privacy Notice */}
+        <PrivacyNotice className="mb-8" />
         
         {/* Main Content */}
         <motion.div
@@ -138,13 +217,13 @@ const Index = () => {
           className="space-y-8"
         >
           {/* Upload Zone (shown when no image is selected) */}
-          {!originalImage && (
-            <UploadZone onFileSelect={handleFileSelect} />
+          {images.length === 0 && (
+            <UploadZone onFilesSelect={handleFilesSelect} />
           )}
           
           {/* Compression Result and Controls (shown after image selection) */}
           <AnimatePresence>
-            {originalImage && compressedImage && (
+            {images.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -152,22 +231,32 @@ const Index = () => {
                 transition={{ duration: 0.5 }}
               >
                 {/* Image Upload Section (smaller when image is selected) */}
-                <div className="mb-8">
+                <div className="mb-8 flex justify-between items-center">
                   <button
-                    onClick={() => setOriginalFile(null)}
-                    className="text-sm text-primary font-medium hover:underline mb-2 inline-flex items-center"
+                    onClick={handleReset}
+                    className="text-sm text-primary font-medium hover:underline inline-flex items-center"
                   >
-                    ← Choose another image
+                    ← Choose different images
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setIsCompressing(true);
+                      setTimeout(() => {
+                        handleFilesSelect([]);
+                        setIsCompressing(false);
+                      }, 500);
+                    }}
+                    className="text-sm bg-secondary px-3 py-1 rounded-full hover:bg-secondary/80 transition-colors"
+                  >
+                    Add more images
                   </button>
                 </div>
                 
-                {/* Image Preview */}
-                <ImagePreview
-                  originalImage={originalImage}
-                  compressedImage={compressedImage}
-                  originalSize={originalSize}
-                  compressedSize={compressedSize}
-                  compressionRatio={compressionRatio}
+                {/* Multi Image Preview */}
+                <MultiImagePreview
+                  images={images}
+                  onRemoveImage={removeImage}
                   className="mb-8"
                 />
                 
@@ -179,8 +268,7 @@ const Index = () => {
                   />
                   
                   <ExportOptions
-                    originalFile={originalFile}
-                    compressedBlob={compressedBlob}
+                    images={images}
                     quality={quality}
                     onExport={handleExport}
                   />
@@ -200,7 +288,7 @@ const Index = () => {
               >
                 <div className="bg-white rounded-2xl p-6 shadow-lg max-w-md w-full text-center">
                   <div className="mx-auto w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"></div>
-                  <h3 className="text-lg font-medium mb-2">Processing your image</h3>
+                  <h3 className="text-lg font-medium mb-2">Processing your images</h3>
                   <p className="text-muted-foreground">This may take a moment depending on the file size...</p>
                 </div>
               </motion.div>

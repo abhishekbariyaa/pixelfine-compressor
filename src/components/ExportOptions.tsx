@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Download, Save, CheckCircle2 } from "lucide-react";
@@ -7,12 +8,12 @@ import {
   downloadFile 
 } from "@/utils/imageCompression";
 import { toast } from "sonner";
+import { ImageItem } from "./MultiImagePreview";
 
 interface ExportOptionsProps {
-  originalFile: File | null;
-  compressedBlob: Blob | null;
+  images: ImageItem[];
   quality: number;
-  onExport: (blob: Blob, url: string) => void;
+  onExport: (id: string, blob: Blob, url: string) => void;
   className?: string;
 }
 
@@ -45,38 +46,42 @@ const formatOptions: FormatOption[] = [
 ];
 
 const ExportOptions = ({ 
-  originalFile, 
-  compressedBlob, 
+  images, 
   quality, 
   onExport,
   className 
 }: ExportOptionsProps) => {
   const [selectedFormat, setSelectedFormat] = useState<FormatOption>(formatOptions[0]);
   const [isExporting, setIsExporting] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleFormatChange = (format: FormatOption) => {
     setSelectedFormat(format);
   };
 
   const handleExport = async () => {
-    if (!originalFile) return;
+    if (images.length === 0) return;
     
     setIsExporting(true);
     
     try {
-      const result = await compressImage(originalFile, {
-        quality: quality,
-        format: selectedFormat.mimeType,
-        maxWidth: 2000,
-        maxHeight: 2000
-      });
+      // Process all images
+      for (const image of images) {
+        const result = await compressImage(image.originalFile, {
+          quality: quality,
+          format: selectedFormat.mimeType,
+          maxWidth: 2000,
+          maxHeight: 2000
+        });
+        
+        onExport(image.id, result.blob, result.url);
+      }
       
-      onExport(result.blob, result.url);
-      toast.success(`Image converted to ${selectedFormat.label}`, {
-        description: `Compressed from ${result.originalSize} to ${result.compressedSize} bytes`
+      toast.success(`${images.length > 1 ? 'Images' : 'Image'} converted to ${selectedFormat.label}`, {
+        description: `${images.length} ${images.length > 1 ? 'images' : 'image'} processed successfully`
       });
     } catch (error) {
-      toast.error("Failed to export image", {
+      toast.error("Failed to export images", {
         description: error instanceof Error ? error.message : "Unknown error"
       });
     } finally {
@@ -84,18 +89,66 @@ const ExportOptions = ({
     }
   };
 
-  const handleDownload = () => {
-    if (!compressedBlob || !originalFile) return;
+  const handleDownload = async () => {
+    if (images.length === 0) return;
     
-    const filename = originalFile.name.split('.')[0] + getFileExtension(selectedFormat.mimeType);
-    downloadFile(compressedBlob, filename);
+    setIsDownloading(true);
     
-    toast.success("Download started", {
-      description: `Your compressed image is being downloaded as ${filename}`
-    });
+    try {
+      for (const image of images) {
+        if (!image.compressedBlob) continue;
+        
+        const filename = image.originalFile.name.split('.')[0] + getFileExtension(selectedFormat.mimeType);
+        downloadFile(image.compressedBlob, filename);
+      }
+      
+      toast.success("Download started", {
+        description: `${images.length} ${images.length > 1 ? 'images are' : 'image is'} being downloaded`
+      });
+    } catch (error) {
+      toast.error("Failed to download images", {
+        description: error instanceof Error ? error.message : "Unknown error"
+      });
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
-  if (!originalFile || !compressedBlob) {
+  const handleExportAndDownloadAll = async () => {
+    if (images.length === 0) return;
+    
+    setIsExporting(true);
+    
+    try {
+      // Process all images
+      for (const image of images) {
+        const result = await compressImage(image.originalFile, {
+          quality: quality,
+          format: selectedFormat.mimeType,
+          maxWidth: 2000,
+          maxHeight: 2000
+        });
+        
+        onExport(image.id, result.blob, result.url);
+        
+        // Download immediately
+        const filename = image.originalFile.name.split('.')[0] + getFileExtension(selectedFormat.mimeType);
+        downloadFile(result.blob, filename);
+      }
+      
+      toast.success(`Downloaded all as ${selectedFormat.label}`, {
+        description: `${images.length} ${images.length > 1 ? 'images' : 'image'} processed and downloaded`
+      });
+    } catch (error) {
+      toast.error("Failed to process and download images", {
+        description: error instanceof Error ? error.message : "Unknown error"
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  if (images.length === 0) {
     return null;
   }
 
@@ -144,12 +197,12 @@ const ExportOptions = ({
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button
             onClick={handleExport}
-            disabled={isExporting || !originalFile}
+            disabled={isExporting || images.length === 0}
             className={`
-              flex-1 px-4 py-2 rounded-lg font-medium text-sm
+              px-4 py-2 rounded-lg font-medium text-sm
               flex items-center justify-center gap-2 transition-all
               ${
                 isExporting
@@ -173,14 +226,39 @@ const ExportOptions = ({
 
           <button
             onClick={handleDownload}
-            disabled={isExporting || !compressedBlob}
+            disabled={isDownloading || images.some(img => !img.compressedBlob)}
             className="px-4 py-2 bg-secondary text-foreground rounded-lg font-medium text-sm
                     flex items-center justify-center gap-2 transition-all hover:bg-secondary/80"
           >
             <Download className="h-4 w-4" />
-            Download
+            Download All
           </button>
         </div>
+
+        <button
+          onClick={handleExportAndDownloadAll}
+          disabled={isExporting || images.length === 0}
+          className={`
+            w-full px-4 py-2 rounded-lg font-medium text-sm border border-primary
+            flex items-center justify-center gap-2 transition-all
+            ${
+              isExporting
+                ? "bg-primary/10 text-primary/70 cursor-not-allowed"
+                : "bg-primary/5 text-primary hover:bg-primary/10"
+            }
+          `}
+        >
+          {isExporting ? (
+            <>
+              <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+              Processing...
+            </>
+          ) : (
+            <>
+              Convert & Download All ({images.length})
+            </>
+          )}
+        </button>
       </div>
     </motion.div>
   );

@@ -4,11 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Upload, Image as ImageIcon } from "lucide-react";
 
 interface UploadZoneProps {
-  onFileSelect: (file: File) => void;
+  onFilesSelect: (files: File[]) => void;
   className?: string;
 }
 
-const UploadZone = ({ onFileSelect, className }: UploadZoneProps) => {
+const UploadZone = ({ onFilesSelect, className }: UploadZoneProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,25 +35,44 @@ const UploadZone = ({ onFileSelect, className }: UploadZoneProps) => {
       e.stopPropagation();
       setIsDragging(false);
 
-      const files = e.dataTransfer.files;
-      if (files && files.length > 0) {
-        const file = files[0];
-        if (file.type.startsWith("image/")) {
-          onFileSelect(file);
+      const droppedFiles = e.dataTransfer.files;
+      if (droppedFiles && droppedFiles.length > 0) {
+        const imageFiles: File[] = [];
+        
+        for (let i = 0; i < droppedFiles.length; i++) {
+          const file = droppedFiles[i];
+          if (file.type.startsWith("image/")) {
+            imageFiles.push(file);
+          }
+        }
+        
+        if (imageFiles.length > 0) {
+          onFilesSelect(imageFiles);
         }
       }
     },
-    [onFileSelect]
+    [onFilesSelect]
   );
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = e.target.files;
-      if (files && files.length > 0) {
-        onFileSelect(files[0]);
+      const selectedFiles = e.target.files;
+      if (selectedFiles && selectedFiles.length > 0) {
+        const imageFiles: File[] = [];
+        
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const file = selectedFiles[i];
+          if (file.type.startsWith("image/")) {
+            imageFiles.push(file);
+          }
+        }
+        
+        if (imageFiles.length > 0) {
+          onFilesSelect(imageFiles);
+        }
       }
     },
-    [onFileSelect]
+    [onFilesSelect]
   );
 
   const handleButtonClick = () => {
@@ -76,6 +95,7 @@ const UploadZone = ({ onFileSelect, className }: UploadZoneProps) => {
         accept="image/*"
         className="hidden"
         id="file-upload"
+        multiple
       />
 
       <div
@@ -110,9 +130,9 @@ const UploadZone = ({ onFileSelect, className }: UploadZoneProps) => {
                     strokeWidth={1.5}
                   />
                 </div>
-                <h3 className="text-lg font-medium mb-2">Drop your image here</h3>
+                <h3 className="text-lg font-medium mb-2">Drop your images here</h3>
                 <p className="text-sm text-muted-foreground">
-                  Release to upload your image
+                  Release to upload your images
                 </p>
               </>
             ) : (
@@ -121,10 +141,10 @@ const UploadZone = ({ onFileSelect, className }: UploadZoneProps) => {
                   <Upload className="h-8 w-8 text-muted-foreground" strokeWidth={1.5} />
                 </div>
                 <h3 className="text-lg font-medium mb-2">
-                  Drag & drop your image here
+                  Drag & drop your images here
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Supports JPG, PNG, WebP and more
+                  Supports multiple images: JPG, PNG, WebP and more
                 </p>
                 <button
                   onClick={handleButtonClick}
@@ -132,7 +152,7 @@ const UploadZone = ({ onFileSelect, className }: UploadZoneProps) => {
                         transition-all shadow-[0_0_0_0_rgba(59,130,246,0.3)] 
                         hover:shadow-[0_0_0_4px_rgba(59,130,246,0.3)] focus:outline-none"
                 >
-                  Select Image
+                  Select Images
                 </button>
               </>
             )}
