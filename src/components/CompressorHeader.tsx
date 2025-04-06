@@ -1,5 +1,6 @@
 
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 interface CompressorHeaderProps {
   className?: string;
@@ -13,7 +14,7 @@ const CompressorHeader = ({ className }: CompressorHeaderProps) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <span className="inline-block px-3 py-1 text-xs font-medium text-primary-foreground rounded-full bg-primary mb-2 tracking-wide animate-pulse-slow">
+        <span className="inline-block px-3 py-1 text-xs font-medium bg-white/10 text-white rounded-none mb-2 tracking-wide">
           Fast • Efficient • Simple
         </span>
         
@@ -25,6 +26,23 @@ const CompressorHeader = ({ className }: CompressorHeaderProps) => {
           Compress your images without losing quality for faster websites and apps. 
           Adjust quality and choose your preferred format.
         </p>
+
+        <a 
+          href="https://bento.me/abhishekbariya" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="mt-6 inline-flex items-center gap-3 bg-white/5 hover:bg-white/10 transition-colors p-3 rounded-none"
+        >
+          <img 
+            src="/profile.jpg" 
+            alt="Abhishek Bariya" 
+            className="w-8 h-8 rounded-none object-cover"
+            onError={(e) => {
+              e.currentTarget.src = "https://placehold.co/32x32/111/eee?text=AB";
+            }}
+          />
+          <span>made with ❤️ by Abhishek Bariya</span>
+        </a>
       </motion.div>
     </header>
   );

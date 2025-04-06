@@ -101,11 +101,11 @@ const UploadZone = ({ onFilesSelect, className }: UploadZoneProps) => {
       <div
         className={`
           flex flex-col items-center justify-center w-full p-10 
-          border-2 border-dashed rounded-2xl transition-all duration-300
+          border-2 border-dashed rounded-none transition-all duration-300
           ${
             isDragging
-              ? "border-primary bg-primary/5"
-              : "border-border hover:border-primary/50 hover:bg-secondary/50"
+              ? "border-primary bg-white/5"
+              : "border-white/20 hover:border-white/40 hover:bg-white/5"
           }
         `}
         onDragEnter={handleDragEnter}
@@ -124,9 +124,9 @@ const UploadZone = ({ onFilesSelect, className }: UploadZoneProps) => {
           >
             {isDragging ? (
               <>
-                <div className="mb-4 p-3 rounded-full bg-primary/10 w-fit mx-auto">
+                <div className="mb-4 p-3 rounded-none bg-white/5 w-fit mx-auto">
                   <ImageIcon
-                    className="h-8 w-8 text-primary animate-pulse"
+                    className="h-8 w-8 text-white animate-pulse"
                     strokeWidth={1.5}
                   />
                 </div>
@@ -137,8 +137,8 @@ const UploadZone = ({ onFilesSelect, className }: UploadZoneProps) => {
               </>
             ) : (
               <>
-                <div className="mb-4 p-3 rounded-full bg-secondary w-fit mx-auto">
-                  <Upload className="h-8 w-8 text-muted-foreground" strokeWidth={1.5} />
+                <div className="mb-4 p-3 rounded-none bg-white/5 w-fit mx-auto">
+                  <Upload className="h-8 w-8 text-white" strokeWidth={1.5} />
                 </div>
                 <h3 className="text-lg font-medium mb-2">
                   Drag & drop your images here
@@ -148,9 +148,8 @@ const UploadZone = ({ onFilesSelect, className }: UploadZoneProps) => {
                 </p>
                 <button
                   onClick={handleButtonClick}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-medium 
-                        transition-all shadow-[0_0_0_0_rgba(59,130,246,0.3)] 
-                        hover:shadow-[0_0_0_4px_rgba(59,130,246,0.3)] focus:outline-none"
+                  className="px-4 py-2 bg-white text-black rounded-none font-medium 
+                        transition-all hover:bg-white/90 focus:outline-none"
                 >
                   Select Images
                 </button>

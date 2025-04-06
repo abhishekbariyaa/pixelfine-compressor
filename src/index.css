@@ -5,35 +5,35 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 25% 10%;
+    --background: 0 0% 7%;
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 25% 10%;
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 10%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 210 100% 50%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 220 25% 10%;
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 210 40% 96%;
-    --accent-foreground: 220 25% 10%;
+    --accent: 0 0% 14%;
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 90%;
-    --input: 220 13% 90%;
-    --ring: 210 100% 50%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 0% 80%;
 
-    --radius: 1rem;
+    --radius: 0rem;
   }
 }
 
@@ -45,6 +45,8 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    letter-spacing: -0.04em;
+    line-height: 1.4em;
   }
 }
 
@@ -66,11 +68,11 @@
   }
   
   .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/20;
+    @apply bg-white/5 backdrop-blur-md border border-white/10;
   }
   
   .glass-dark {
-    @apply bg-black/10 backdrop-blur-md border border-white/10;
+    @apply bg-black/30 backdrop-blur-md border border-white/5;
   }
   
   .text-balance {
@@ -78,42 +80,12 @@
   }
 }
 
-/* Custom Font */
-@font-face {
-  font-family: 'SF Pro Display';
-  src: local('SF Pro Display'), 
-       url('https://fonts.cdnfonts.com/s/91513/SFPRODISPLAYREGULAR.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
+/* Inter Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-@font-face {
-  font-family: 'SF Pro Display';
-  src: local('SF Pro Display Medium'), 
-       url('https://fonts.cdnfonts.com/s/91513/SFPRODISPLAYMEDIUM.woff') format('woff');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: local('SF Pro Display Bold'), 
-       url('https://fonts.cdnfonts.com/s/91513/SFPRODISPLAYBOLD.woff') format('woff');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Apply font to all text */
+/* Apply Inter font to all text */
 body {
-  font-family: 'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Custom scrollbar */
@@ -123,14 +95,14 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #1a1a1a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+  background: #333;
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: #444;
 }

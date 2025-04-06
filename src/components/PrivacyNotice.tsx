@@ -29,17 +29,17 @@ const PrivacyNotice = ({ className }: PrivacyNoticeProps) => {
       transition={{ duration: 0.3 }}
       className={className}
     >
-      <Alert className="border-green-500 bg-green-50 text-green-800">
-        <Shield className="h-5 w-5 text-green-600" />
-        <AlertTitle className="text-green-700 font-medium">Your privacy is protected</AlertTitle>
-        <AlertDescription className="text-green-700">
+      <Alert className="border border-white/10 bg-secondary">
+        <Shield className="h-5 w-5" />
+        <AlertTitle className="font-medium">Your privacy is protected</AlertTitle>
+        <AlertDescription>
           <div className="flex flex-col space-y-2">
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-green-600 flex-shrink-0" />
+              <Clock className="h-4 w-4 flex-shrink-0" />
               <span>Images are automatically deleted after 10 minutes</span>
             </div>
             <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-green-600 flex-shrink-0" />
+              <Shield className="h-4 w-4 flex-shrink-0" />
               <span>Your images are processed locally and never shared with anyone</span>
             </div>
           </div>
