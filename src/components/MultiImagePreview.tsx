@@ -48,7 +48,7 @@ const MultiImagePreview = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`rounded-2xl overflow-hidden shadow-lg bg-white ${className}`}
+      className={`rounded-none border border-border bg-card shadow-lg ${className}`}
     >
       <div className="relative aspect-video overflow-hidden">
         <AnimatePresence mode="wait">
@@ -58,7 +58,7 @@ const MultiImagePreview = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-[#f5f5f7]"
+            className="absolute inset-0 bg-background"
           >
             <img
               src={showOriginal ? selectedImage.originalUrl : (selectedImage.compressedUrl || selectedImage.originalUrl)}
@@ -71,20 +71,20 @@ const MultiImagePreview = ({
         {/* Image controls */}
         <div className="absolute top-4 left-4 flex gap-2">
           <div
-            className={`px-3 py-1 rounded-full text-xs font-medium backdrop-blur-md transition-all cursor-pointer ${
+            className={`px-3 py-1 rounded-none text-xs font-medium cursor-pointer transition-all ${
               !showOriginal
-                ? "bg-primary text-white"
-                : "bg-black/10 text-black"
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground"
             }`}
             onClick={() => setShowOriginal(false)}
           >
             Compressed
           </div>
           <div
-            className={`px-3 py-1 rounded-full text-xs font-medium backdrop-blur-md transition-all cursor-pointer ${
+            className={`px-3 py-1 rounded-none text-xs font-medium cursor-pointer transition-all ${
               showOriginal
-                ? "bg-primary text-white"
-                : "bg-black/10 text-black"
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground"
             }`}
             onClick={() => setShowOriginal(true)}
           >
@@ -95,13 +95,13 @@ const MultiImagePreview = ({
         {/* Remove button */}
         <button
           onClick={() => onRemoveImage(selectedImage.id)}
-          className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white p-1 rounded-full transition-all"
+          className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-1 rounded-none transition-all"
         >
           <X className="h-4 w-4" />
         </button>
 
         {/* Image size info */}
-        <div className="absolute bottom-4 right-4 bg-black/30 text-white px-3 py-1 rounded-full text-xs font-medium">
+        <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-none text-xs font-medium">
           {showOriginal
             ? `Original: ${formatFileSize(selectedImage.originalSize)}`
             : `Compressed: ${formatFileSize(selectedImage.compressedSize)}`}
@@ -112,13 +112,13 @@ const MultiImagePreview = ({
           <>
             <button
               onClick={handlePrevious}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-all"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-none transition-all"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
             <button
               onClick={handleNext}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-all"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-none transition-all"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -152,7 +152,7 @@ const MultiImagePreview = ({
         </div>
 
         <div 
-          className="relative h-8 bg-secondary rounded-full overflow-hidden cursor-pointer"
+          className="relative h-8 bg-secondary rounded-none overflow-hidden cursor-pointer"
           onClick={() => setShowOriginal(!showOriginal)}
         >
           <div 
@@ -161,10 +161,10 @@ const MultiImagePreview = ({
           ></div>
           
           <div className="absolute inset-y-0 left-0 w-full flex">
-            <div className="w-1/2 flex items-center justify-center text-xs font-medium z-10">
+            <div className="w-1/2 flex items-center justify-center text-xs font-medium z-10 text-foreground">
               Original
             </div>
-            <div className="w-1/2 flex items-center justify-center text-xs font-medium z-10">
+            <div className="w-1/2 flex items-center justify-center text-xs font-medium z-10 text-foreground">
               Compressed
             </div>
           </div>
@@ -178,8 +178,8 @@ const MultiImagePreview = ({
                 key={image.id}
                 onClick={() => setSelectedIndex(index)}
                 className={`
-                  w-16 h-16 rounded-md overflow-hidden flex-shrink-0 cursor-pointer
-                  ${selectedIndex === index ? 'ring-2 ring-primary' : 'opacity-70'}
+                  w-16 h-16 rounded-none overflow-hidden flex-shrink-0 cursor-pointer border
+                  ${selectedIndex === index ? 'border-primary' : 'border-border opacity-70'}
                 `}
               >
                 <img 

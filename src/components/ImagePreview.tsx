@@ -43,7 +43,7 @@ const ImagePreview = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`rounded-2xl overflow-hidden shadow-lg bg-white ${className}`}
+      className={`rounded-none border border-border bg-card shadow-lg ${className}`}
     >
       <div className="relative aspect-video overflow-hidden">
         <AnimatePresence mode="wait">
@@ -53,7 +53,7 @@ const ImagePreview = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-[#f5f5f7]"
+            className="absolute inset-0 bg-background"
           >
             {isLoading ? (
               <div className="flex items-center justify-center h-full">
@@ -71,20 +71,20 @@ const ImagePreview = ({
 
         <div className="absolute top-4 left-4 flex gap-2">
           <div
-            className={`px-3 py-1 rounded-full text-xs font-medium backdrop-blur-md transition-all ${
-              showOriginal
-                ? "bg-black/10 text-black"
-                : "bg-primary text-white"
+            className={`px-3 py-1 rounded-none text-xs font-medium cursor-pointer transition-all ${
+              !showOriginal
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground"
             }`}
             onClick={() => setShowOriginal(false)}
           >
             Compressed
           </div>
           <div
-            className={`px-3 py-1 rounded-full text-xs font-medium backdrop-blur-md transition-all ${
-              !showOriginal
-                ? "bg-black/10 text-black"
-                : "bg-primary text-white"
+            className={`px-3 py-1 rounded-none text-xs font-medium cursor-pointer transition-all ${
+              showOriginal
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground"
             }`}
             onClick={() => setShowOriginal(true)}
           >
@@ -92,7 +92,7 @@ const ImagePreview = ({
           </div>
         </div>
 
-        <div className="absolute bottom-4 right-4 glass px-3 py-1 rounded-full text-xs font-medium">
+        <div className="absolute bottom-4 right-4 bg-black/50 px-3 py-1 rounded-none text-xs font-medium text-white">
           {showOriginal
             ? `Original: ${formatFileSize(originalSize)}`
             : `Compressed: ${formatFileSize(compressedSize)}`}
@@ -118,7 +118,7 @@ const ImagePreview = ({
         </div>
 
         <div 
-          className="relative h-8 bg-secondary rounded-full overflow-hidden cursor-pointer"
+          className="relative h-8 bg-secondary rounded-none overflow-hidden cursor-pointer"
           onClick={() => setShowOriginal(!showOriginal)}
         >
           <div 
@@ -127,10 +127,10 @@ const ImagePreview = ({
           ></div>
           
           <div className="absolute inset-y-0 left-0 w-full flex">
-            <div className="w-1/2 flex items-center justify-center text-xs font-medium z-10">
+            <div className="w-1/2 flex items-center justify-center text-xs font-medium z-10 text-foreground">
               Original
             </div>
-            <div className="w-1/2 flex items-center justify-center text-xs font-medium z-10">
+            <div className="w-1/2 flex items-center justify-center text-xs font-medium z-10 text-foreground">
               Compressed
             </div>
           </div>
