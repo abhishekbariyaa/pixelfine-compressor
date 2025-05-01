@@ -157,7 +157,7 @@ const ExportOptions = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2, duration: 0.5 }}
-      className={`rounded-2xl bg-white p-6 shadow-lg ${className}`}
+      className={`rounded-md bg-card border border-border p-6 ${className}`}
     >
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2 rounded-full bg-secondary">
@@ -175,7 +175,7 @@ const ExportOptions = ({
                 key={format.id}
                 onClick={() => handleFormatChange(format)}
                 className={`
-                  relative rounded-lg border p-3 flex flex-col cursor-pointer transition-all
+                  relative rounded-none border p-3 flex flex-col cursor-pointer transition-all
                   ${
                     selectedFormat.id === format.id
                       ? "border-primary bg-primary/5"
@@ -202,7 +202,7 @@ const ExportOptions = ({
             onClick={handleExport}
             disabled={isExporting || images.length === 0}
             className={`
-              px-4 py-2 rounded-lg font-medium text-sm
+              px-4 py-2 rounded-none font-medium text-sm
               flex items-center justify-center gap-2 transition-all
               ${
                 isExporting
@@ -227,7 +227,7 @@ const ExportOptions = ({
           <button
             onClick={handleDownload}
             disabled={isDownloading || images.some(img => !img.compressedBlob)}
-            className="px-4 py-2 bg-secondary text-foreground rounded-lg font-medium text-sm
+            className="px-4 py-2 bg-secondary text-foreground rounded-none font-medium text-sm
                     flex items-center justify-center gap-2 transition-all hover:bg-secondary/80"
           >
             <Download className="h-4 w-4" />
@@ -239,7 +239,7 @@ const ExportOptions = ({
           onClick={handleExportAndDownloadAll}
           disabled={isExporting || images.length === 0}
           className={`
-            w-full px-4 py-2 rounded-lg font-medium text-sm border border-primary
+            w-full px-4 py-2 rounded-none font-medium text-sm border border-primary
             flex items-center justify-center gap-2 transition-all
             ${
               isExporting

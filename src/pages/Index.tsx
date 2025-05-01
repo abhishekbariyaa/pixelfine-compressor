@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -247,7 +246,7 @@ const Index = () => {
                         setIsCompressing(false);
                       }, 500);
                     }}
-                    className="text-sm bg-secondary px-3 py-1 rounded-full hover:bg-secondary/80 transition-colors"
+                    className="text-sm bg-secondary px-3 py-1 rounded-none hover:bg-secondary/80 transition-colors"
                   >
                     Add more images
                   </button>
@@ -286,7 +285,7 @@ const Index = () => {
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50"
               >
-                <div className="bg-white rounded-2xl p-6 shadow-lg max-w-md w-full text-center">
+                <div className="bg-card border border-border rounded-none p-6 shadow-lg max-w-md w-full text-center">
                   <div className="mx-auto w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"></div>
                   <h3 className="text-lg font-medium mb-2">Processing your images</h3>
                   <p className="text-muted-foreground">This may take a moment depending on the file size...</p>

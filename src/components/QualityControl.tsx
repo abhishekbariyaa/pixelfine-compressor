@@ -46,7 +46,7 @@ const QualityControl = ({ quality, onQualityChange, className }: QualityControlP
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1, duration: 0.5 }}
-      className={`rounded-2xl bg-white p-6 shadow-lg ${className}`}
+      className={`rounded-md bg-card border border-border p-6 ${className}`}
     >
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2 rounded-full bg-secondary">
@@ -82,9 +82,9 @@ const QualityControl = ({ quality, onQualityChange, className }: QualityControlP
           <div className="flex justify-between mt-3">
             <button
               onClick={() => setPresetQuality(0.3, "low")}
-              className={`px-3 py-1 text-xs rounded-full transition-all ${
+              className={`px-3 py-1 text-xs rounded-none transition-all ${
                 activeLabel === "low"
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-muted-foreground hover:bg-secondary/80"
               }`}
             >
@@ -92,9 +92,9 @@ const QualityControl = ({ quality, onQualityChange, className }: QualityControlP
             </button>
             <button
               onClick={() => setPresetQuality(0.6, "balanced")}
-              className={`px-3 py-1 text-xs rounded-full transition-all ${
+              className={`px-3 py-1 text-xs rounded-none transition-all ${
                 activeLabel === "balanced"
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-muted-foreground hover:bg-secondary/80"
               }`}
             >
@@ -102,9 +102,9 @@ const QualityControl = ({ quality, onQualityChange, className }: QualityControlP
             </button>
             <button
               onClick={() => setPresetQuality(0.8, "high")}
-              className={`px-3 py-1 text-xs rounded-full transition-all ${
+              className={`px-3 py-1 text-xs rounded-none transition-all ${
                 activeLabel === "high"
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-muted-foreground hover:bg-secondary/80"
               }`}
             >
@@ -112,9 +112,9 @@ const QualityControl = ({ quality, onQualityChange, className }: QualityControlP
             </button>
             <button
               onClick={() => setPresetQuality(0.95, "maximum")}
-              className={`px-3 py-1 text-xs rounded-full transition-all ${
+              className={`px-3 py-1 text-xs rounded-none transition-all ${
                 activeLabel === "maximum"
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-muted-foreground hover:bg-secondary/80"
               }`}
             >
