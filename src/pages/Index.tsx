@@ -218,68 +218,68 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background pb-16">
-      <div className="container max-w-5xl py-10">
+    <div className="min-h-screen bg-background">
+      <div className="container max-w-6xl py-8">
         {/* App Header */}
         <CompressorHeader />
         
         {/* Privacy Notice */}
-        <PrivacyNotice className="mb-8" />
+        <PrivacyNotice className="mb-12" />
         
         {/* Main Content */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          className="space-y-8"
+          transition={{ duration: 0.8 }}
+          className="space-y-12"
         >
           {/* Upload Zone (shown when no image is selected) */}
           {images.length === 0 && (
             <UploadZone onFilesSelect={handleFilesSelect} />
           )}
           
-          {/* Compression Result and Controls (shown after image selection) */}
-          <AnimatePresence>
-            {images.length > 0 && (
-              <ImageCompression
-                images={images}
-                quality={quality}
-                onQualityChange={handleQualityChange}
-                onRemoveImage={removeImage}
-                onImagesUpdate={handleImagesUpdate}
-                onReset={handleReset}
-                onAddMore={handleAddMore}
-              />
-            )}
-          </AnimatePresence>
+          {/* Compression Interface (shown after image selection) */}
+          {images.length > 0 && (
+            <ImageCompression
+              images={images}
+              quality={quality}
+              onQualityChange={handleQualityChange}
+              onRemoveImage={removeImage}
+              onImagesUpdate={handleImagesUpdate}
+              onReset={handleReset}
+              onAddMore={handleAddMore}
+            />
+          )}
           
           {/* Loading Overlay */}
-          <AnimatePresence>
-            {isCompressing && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50"
-              >
-                <div className="bg-card border border-border rounded-none p-6 shadow-lg max-w-md w-full text-center">
-                  <div className="mx-auto w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"></div>
-                  <h3 className="text-lg font-medium mb-2">Processing your images</h3>
-                  <p className="text-muted-foreground">This may take a moment depending on the file size...</p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {isCompressing && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-background/90 backdrop-blur-md flex items-center justify-center z-50"
+            >
+              <div className="glass-card rounded-2xl p-8 text-center max-w-md w-full mx-4">
+                <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-6"></div>
+                <h3 className="text-xl font-medium mb-3 text-foreground">Processing Images</h3>
+                <p className="text-muted-foreground">Applying compression algorithms...</p>
+              </div>
+            </motion.div>
+          )}
         </motion.div>
         
         {/* Footer */}
         <motion.footer
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.5 }}
-          className="mt-16 text-center text-sm text-muted-foreground"
+          transition={{ delay: 1, duration: 0.6 }}
+          className="mt-20 text-center"
         >
-          <p>Fast Image Compressor • Optimize images without losing quality</p>
+          <div className="glass rounded-xl px-6 py-4 inline-block">
+            <p className="text-sm text-muted-foreground">
+              Advanced Image Compression • Powered by Modern Web Technologies
+            </p>
+          </div>
         </motion.footer>
       </div>
     </div>

@@ -117,17 +117,27 @@ const ImageCompression = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`bg-card border border-border rounded-lg p-6 ${className}`}
+      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+      className={`glass-card rounded-2xl p-8 interactive-glow ${className}`}
     >
       {/* Header Controls */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={onReset}>
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onReset}
+            className="bg-surface-2/50 border-border/50 hover:bg-surface-3/50 hover:border-primary/30 transition-smooth"
+          >
             <RotateCcw className="h-4 w-4 mr-2" />
             Choose different
           </Button>
-          <Button variant="outline" size="sm" onClick={onAddMore}>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onAddMore}
+            className="bg-surface-2/50 border-border/50 hover:bg-surface-3/50 hover:border-accent/30 transition-smooth"
+          >
             Add more images
           </Button>
         </div>
@@ -136,6 +146,7 @@ const ImageCompression = ({
           variant="outline"
           size="sm"
           onClick={() => onRemoveImage(currentImage.id)}
+          className="bg-surface-2/50 border-border/50 hover:bg-destructive/20 hover:border-destructive/50 transition-smooth"
         >
           <Trash2 className="h-4 w-4 mr-2" />
           Remove
@@ -143,22 +154,36 @@ const ImageCompression = ({
       </div>
 
       {/* Main Image Display */}
-      <div className="relative mb-6">
-        <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+      <div className="relative mb-8">
+        <div className="aspect-video glass rounded-2xl overflow-hidden relative group">
           <img
             src={showOriginal ? currentImage.originalUrl : currentImage.compressedUrl}
             alt={currentImage.originalFile.name}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain transition-smooth"
           />
+          
+          {/* Overlay gradient for better text visibility */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-background/30 pointer-events-none" />
+          
+          {/* Processing overlay */}
+          {isProcessing && (
+            <div className="absolute inset-0 glass flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-12 h-12 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">Converting...</p>
+              </div>
+            </div>
+          )}
         </div>
         
         {/* Image Toggle */}
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-6 right-6">
           <Toggle
             pressed={showOriginal}
             onPressedChange={setShowOriginal}
             variant="outline"
             size="sm"
+            className="glass bg-surface-2/80 border-border/50 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground hover:bg-surface-3/80 transition-smooth"
           >
             {showOriginal ? 'Original' : 'Compressed'}
           </Toggle>
@@ -166,22 +191,29 @@ const ImageCompression = ({
       </div>
 
       {/* File Info */}
-      <div className="mb-6">
-        <h3 className="font-medium text-lg mb-2">{currentImage.originalFile.name}</h3>
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>Original: {formatFileSize(currentImage.originalSize)}</span>
-          <span>Compressed: {formatFileSize(currentImage.compressedSize)}</span>
-          <span className="text-primary font-medium">
-            {currentImage.compressionRatio.toFixed(1)}% smaller
-          </span>
+      <div className="mb-8 p-6 glass rounded-xl">
+        <h3 className="font-medium text-xl mb-4 text-foreground">{currentImage.originalFile.name}</h3>
+        <div className="grid grid-cols-3 gap-4 text-sm">
+          <div className="text-center">
+            <p className="text-muted-foreground mb-1">Original</p>
+            <p className="font-medium text-foreground">{formatFileSize(currentImage.originalSize)}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-muted-foreground mb-1">Compressed</p>
+            <p className="font-medium text-foreground">{formatFileSize(currentImage.compressedSize)}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-muted-foreground mb-1">Saved</p>
+            <p className="font-medium text-primary">{currentImage.compressionRatio.toFixed(1)}%</p>
+          </div>
         </div>
       </div>
 
       {/* Quality Control */}
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-3">
-          <label className="text-sm font-medium">Quality</label>
-          <span className="text-sm text-primary font-medium">
+      <div className="mb-8 p-6 glass rounded-xl">
+        <div className="flex justify-between items-center mb-6">
+          <label className="text-sm font-medium text-foreground">Quality Control</label>
+          <span className="text-sm font-medium px-3 py-1 rounded-lg bg-primary/20 text-primary border border-primary/30">
             {Math.round(quality * 100)}%
           </span>
         </div>
@@ -192,13 +224,19 @@ const ImageCompression = ({
           min={0.1}
           step={0.01}
           disabled={selectedFormat === 'png' || isProcessing}
+          className="mb-4"
         />
+        <div className="flex justify-between text-xs text-muted-foreground">
+          <span>Smallest</span>
+          <span>Balanced</span>
+          <span>Highest</span>
+        </div>
       </div>
 
       {/* Format Selection */}
-      <div className="mb-6">
-        <label className="text-sm font-medium mb-3 block">Format</label>
-        <div className="flex gap-2">
+      <div className="mb-8 p-6 glass rounded-xl">
+        <label className="text-sm font-medium mb-4 block text-foreground">Output Format</label>
+        <div className="flex gap-3">
           {(['png', 'jpeg', 'webp'] as FormatType[]).map((format) => (
             <Toggle
               key={format}
@@ -206,7 +244,11 @@ const ImageCompression = ({
               onPressedChange={() => selectedFormat !== format && handleFormatChange(format)}
               variant="outline"
               disabled={isProcessing}
-              className="uppercase"
+              className={`flex-1 uppercase font-medium transition-smooth ${
+                selectedFormat === format
+                  ? 'bg-primary text-primary-foreground border-primary glow-primary'
+                  : 'bg-surface-2/50 border-border/50 hover:bg-surface-3/50 hover:border-primary/30'
+              }`}
             >
               {format}
             </Toggle>
@@ -215,12 +257,21 @@ const ImageCompression = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-3">
-        <Button onClick={handlePreview} variant="outline" className="flex-1">
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <Button 
+          onClick={handlePreview} 
+          variant="outline" 
+          className="bg-surface-2/50 border-border/50 hover:bg-surface-3/50 hover:border-accent/50 transition-smooth interactive-scale"
+          disabled={isProcessing}
+        >
           <Eye className="h-4 w-4 mr-2" />
           Preview {selectedFormat.toUpperCase()}
         </Button>
-        <Button onClick={handleDownload} className="flex-1">
+        <Button 
+          onClick={handleDownload} 
+          className="bg-primary hover:bg-primary-glow glow-primary transition-smooth interactive-scale"
+          disabled={isProcessing}
+        >
           <Download className="h-4 w-4 mr-2" />
           Download {selectedFormat.toUpperCase()}
         </Button>
@@ -228,16 +279,17 @@ const ImageCompression = ({
 
       {/* Thumbnails for multiple images */}
       {images.length > 1 && (
-        <div className="mt-6 pt-6 border-t border-border">
-          <div className="flex gap-2 overflow-x-auto">
+        <div className="pt-8 border-t border-border/30">
+          <p className="text-sm font-medium text-muted-foreground mb-4">All Images ({images.length})</p>
+          <div className="flex gap-3 overflow-x-auto pb-2">
             {images.map((image, index) => (
               <button
                 key={image.id}
                 onClick={() => setSelectedIndex(index)}
-                className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
+                className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-smooth interactive-scale ${
                   index === selectedIndex 
-                    ? 'border-primary' 
-                    : 'border-border hover:border-primary/50'
+                    ? 'border-primary glow-primary' 
+                    : 'border-border/50 hover:border-primary/50'
                 }`}
               >
                 <img

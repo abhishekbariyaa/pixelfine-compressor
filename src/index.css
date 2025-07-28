@@ -2,31 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import Inter font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 @layer base {
   :root {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 0 0% 14%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 0 0% 80%;
-    --radius: 0rem;
+    /* Futuristic Dark Color Palette */
+    --background: 0 0% 4%;
+    --foreground: 0 0% 95%;
+    
+    /* Card surfaces with subtle transparency */
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 95%;
+    --card-glass: 240 5% 12%;
+    
+    /* Popovers and overlays */
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 95%;
+    
+    /* Primary accent - Electric Orange */
+    --primary: 24 100% 60%;
+    --primary-foreground: 0 0% 4%;
+    --primary-glow: 24 100% 70%;
+    
+    /* Secondary surfaces */
+    --secondary: 240 5% 12%;
+    --secondary-foreground: 0 0% 85%;
+    
+    /* Muted text and backgrounds */
+    --muted: 240 4% 16%;
+    --muted-foreground: 0 0% 60%;
+    
+    /* Accent - Cool Cyan */
+    --accent: 186 100% 60%;
+    --accent-foreground: 0 0% 4%;
+    --accent-glow: 186 100% 70%;
+    
+    /* Destructive states */
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 0 0% 95%;
+    
+    /* Borders and inputs */
+    --border: 240 4% 18%;
+    --input: 240 4% 16%;
+    --input-glow: 240 4% 24%;
+    --ring: 24 100% 60%;
+    
+    /* Surface elevation */
+    --surface-1: 240 5% 8%;
+    --surface-2: 240 5% 10%;
+    --surface-3: 240 5% 14%;
+    
+    /* Glass effects */
+    --glass-bg: 240 5% 12%;
+    --glass-border: 240 5% 20%;
+    
+    /* Shadows and glows */
+    --shadow-glow: 0 0 30px hsl(var(--primary) / 0.15);
+    --shadow-accent-glow: 0 0 30px hsl(var(--accent) / 0.15);
+    --shadow-elegant: 0 20px 60px -20px hsl(0 0% 0% / 0.6);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    
+    --radius: 1.5rem;
   }
 }
 
@@ -35,60 +72,150 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    font-feature-settings: "rlig" 1, "calt" 1;
-    letter-spacing: -0.04em;
-    line-height: 1.4em;
+    font-family: 'Switzer', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    font-feature-settings: "rlig" 1, "calt" 1, "kern" 1;
+  }
+
+  /* Typography hierarchy */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Switzer', sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  h1 { @apply text-4xl md:text-5xl; }
+  h2 { @apply text-3xl md:text-4xl; }
+  h3 { @apply text-xl md:text-2xl; }
+  h4 { @apply text-lg md:text-xl; }
+  h5 { @apply text-base md:text-lg; }
+  h6 { @apply text-sm md:text-base; }
+
+  p, span, div {
+    font-family: 'Switzer', sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
   }
 }
 
-/* Custom Classes */
+/* Glass morphism utilities */
 @layer utilities {
-  .backdrop-blur-sm {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  .glass {
+    background: linear-gradient(135deg, 
+      hsl(var(--glass-bg) / 0.8) 0%, 
+      hsl(var(--glass-bg) / 0.4) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--glass-border) / 0.3);
+    box-shadow: 
+      0 8px 32px hsl(0 0% 0% / 0.2),
+      inset 0 1px 0 hsl(0 0% 100% / 0.05);
   }
-  
-  .backdrop-blur-md {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-  
-  .backdrop-blur-lg {
+
+  .glass-card {
+    background: linear-gradient(135deg, 
+      hsl(var(--card) / 0.9) 0%, 
+      hsl(var(--surface-1) / 0.7) 100%);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: var(--shadow-elegant);
   }
-  
-  .glass {
-    @apply bg-white/5 backdrop-blur-md border border-white/10;
+
+  .glow-primary {
+    box-shadow: var(--shadow-glow);
   }
-  
-  .glass-dark {
-    @apply bg-black/30 backdrop-blur-md border border-white/5;
+
+  .glow-accent {
+    box-shadow: var(--shadow-accent-glow);
   }
-  
+
+  .surface-1 {
+    background: hsl(var(--surface-1));
+  }
+
+  .surface-2 {
+    background: hsl(var(--surface-2));
+  }
+
+  .surface-3 {
+    background: hsl(var(--surface-3));
+  }
+
   .text-balance {
     text-wrap: balance;
   }
+
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+
+  .transition-spring {
+    transition: var(--transition-spring);
+  }
+
+  /* Interactive states */
+  .interactive-glow {
+    transition: var(--transition-smooth);
+  }
+
+  .interactive-glow:hover {
+    box-shadow: 
+      var(--shadow-elegant),
+      0 0 20px hsl(var(--primary) / 0.3);
+    transform: translateY(-2px);
+  }
+
+  .interactive-scale {
+    transition: var(--transition-spring);
+  }
+
+  .interactive-scale:hover {
+    transform: scale(1.02);
+  }
+
+  .interactive-scale:active {
+    transform: scale(0.98);
+  }
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar with futuristic styling */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #333;
+  background: hsl(var(--background));
   border-radius: 0;
 }
 
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, 
+    hsl(var(--primary) / 0.3) 0%, 
+    hsl(var(--accent) / 0.3) 100%);
+  border-radius: 4px;
+  border: 1px solid hsl(var(--border) / 0.3);
+}
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #444;
+  background: linear-gradient(180deg, 
+    hsl(var(--primary) / 0.5) 0%, 
+    hsl(var(--accent) / 0.5) 100%);
+}
+
+/* Selection styling */
+::selection {
+  background: hsl(var(--primary) / 0.3);
+  color: hsl(var(--foreground));
 }
