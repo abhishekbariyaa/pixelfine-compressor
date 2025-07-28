@@ -6,9 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 // Import components
 import CompressorHeader from "@/components/CompressorHeader";
 import UploadZone from "@/components/UploadZone";
-import QualityControl from "@/components/QualityControl";
-import ExportOptions from "@/components/ExportOptions";
-import MultiImagePreview from "@/components/MultiImagePreview";
+import ImageCompression from "@/components/ImageCompression";
 import PrivacyNotice from "@/components/PrivacyNotice";
 
 // Import utility functions
@@ -189,6 +187,26 @@ const Index = () => {
     setImages([]);
   };
 
+  // Handle adding more images
+  const handleAddMore = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = true;
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const files = Array.from((e.target as HTMLInputElement).files || []);
+      if (files.length > 0) {
+        handleFilesSelect(files);
+      }
+    };
+    input.click();
+  };
+
+  // Handle images update from ImageCompression component
+  const handleImagesUpdate = (updatedImages: ImageItem[]) => {
+    setImages(updatedImages);
+  };
+
   // Clean up object URLs on unmount
   useEffect(() => {
     return () => {
@@ -223,56 +241,15 @@ const Index = () => {
           {/* Compression Result and Controls (shown after image selection) */}
           <AnimatePresence>
             {images.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5 }}
-              >
-                {/* Image Upload Section (smaller when image is selected) */}
-                <div className="mb-8 flex justify-between items-center">
-                  <button
-                    onClick={handleReset}
-                    className="text-sm text-primary font-medium hover:underline inline-flex items-center"
-                  >
-                    ← Choose different images
-                  </button>
-                  
-                  <button
-                    onClick={() => {
-                      setIsCompressing(true);
-                      setTimeout(() => {
-                        handleFilesSelect([]);
-                        setIsCompressing(false);
-                      }, 500);
-                    }}
-                    className="text-sm bg-secondary px-3 py-1 rounded-none hover:bg-secondary/80 transition-colors"
-                  >
-                    Add more images
-                  </button>
-                </div>
-                
-                {/* Multi Image Preview */}
-                <MultiImagePreview
-                  images={images}
-                  onRemoveImage={removeImage}
-                  className="mb-8"
-                />
-                
-                {/* Controls Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <QualityControl 
-                    quality={quality} 
-                    onQualityChange={handleQualityChange} 
-                  />
-                  
-                  <ExportOptions
-                    images={images}
-                    quality={quality}
-                    onExport={handleExport}
-                  />
-                </div>
-              </motion.div>
+              <ImageCompression
+                images={images}
+                quality={quality}
+                onQualityChange={handleQualityChange}
+                onRemoveImage={removeImage}
+                onImagesUpdate={handleImagesUpdate}
+                onReset={handleReset}
+                onAddMore={handleAddMore}
+              />
             )}
           </AnimatePresence>
           
